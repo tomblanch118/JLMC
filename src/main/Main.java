@@ -14,6 +14,11 @@ public class Main {
 	/*
 	 * ~/Downloads/jdk-14.jdk/Contents/Home/bin/jpackage  --input ./ --java-options -splash:splash.png --name JLMC --mac-package-name JLMC --main-jar JLMC.jar
 	 */
+	
+	// -Xdock:name="JLMC" -Xdock:icon=jlmc.png
+	// Splashscreen must be set in jar manifest as SplashScreen-Image: splash.png
+	// splash 
+	// https://www.youtube.com/watch?v=kwdK6Dg1a_Y
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {

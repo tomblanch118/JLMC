@@ -10,10 +10,10 @@ import language.Messages;
 
 //TODO: Mac packaging etc
 public class Editor {
-	private ArrayList<String> lines = new ArrayList<>();
-	private HashMap<String, Integer> labels = new HashMap<>();
-	private ArrayList<Instruction> instructions = new ArrayList<>();
-	private HashMap<Integer, String> comments = new HashMap<>();
+	private ArrayList<String> lines = new ArrayList<String>();
+	private HashMap<String, Integer> labels = new HashMap<String, Integer>();
+	private ArrayList<Instruction> instructions = new ArrayList<Instruction>();
+	private HashMap<Integer, String> comments = new HashMap<Integer, String>();
 
 	public Editor() {
 	}
@@ -46,7 +46,7 @@ public class Editor {
 		int longestLabel = 0;
 
 		// store labels by line number and figure out the longest label
-		HashMap<Integer, String> labelsByLine = new HashMap<>();
+		HashMap<Integer, String> labelsByLine = new HashMap<Integer, String>();
 
 		for (String s : labels.keySet()) {
 			labelsByLine.put(labels.get(s), s);
