@@ -19,7 +19,11 @@ public class Main {
 	// Splashscreen must be set in jar manifest as SplashScreen-Image: splash.png
 	// splash 
 	// https://www.youtube.com/watch?v=kwdK6Dg1a_Y
-
+	// Can probably make an ant task to do this?
+	
+	// https://github.com/tofi86/universalJavaApplicationStub
+	// https://github.com/UltraMixer/JarBundler Interesting looking bundling tool
+	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {

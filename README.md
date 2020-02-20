@@ -1,3 +1,5 @@
+![alt text](https://user-images.githubusercontent.com/7421219/74933274-8acf3500-53db-11ea-8a00-cb07bf14cace.png "Screen of JLMC")
+
 # JLMC
 Currently only a Mac installer is provided, just download JLMC-1.0.dmg and double click to install.
 

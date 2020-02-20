@@ -13,6 +13,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -32,6 +33,7 @@ public class LMCDisplay extends JFrame implements ActionListener{
 	private JMenu fileMenu = new JMenu("File");
 	private JMenuItem openItem = new JMenuItem("Open");
 	private JMenuItem saveItem = new JMenuItem("Save");
+	private JMenuItem exitItem = new JMenuItem("Exit");
 	
 	// Reference to the editor panel so save/load methods can be called
 	private EditorPanel ep;
@@ -52,10 +54,13 @@ public class LMCDisplay extends JFrame implements ActionListener{
 
 		openItem.addActionListener(this);
 		saveItem.addActionListener(this);
+		exitItem.addActionListener(this);
 		
 		menuBar.add(fileMenu);
 		fileMenu.add(openItem);
 		fileMenu.add(saveItem);
+		fileMenu.add(new JSeparator());
+		fileMenu.add(exitItem);
 		this.setJMenuBar(menuBar);
 		
 		
@@ -97,6 +102,9 @@ public class LMCDisplay extends JFrame implements ActionListener{
 		    if(returnVal == JFileChooser.APPROVE_OPTION) {
 		    	ep.saveFile(chooser.getSelectedFile());
 		    }
+		}
+		else if(e.getSource().equals(exitItem)) {
+			System.exit(1);
 		}
 	}
 	
