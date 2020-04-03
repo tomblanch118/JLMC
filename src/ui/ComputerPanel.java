@@ -3,10 +3,12 @@ package ui;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -64,6 +66,34 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 			g.drawString(values[i], x + 2, y + 12 + ((i + 1) * 14));
 		}
 
+	}
+	
+	private ArrayList<String> fitToWidth(int width, String text, Graphics context) {
+		
+		String[] tokens = text.split("\\ ");
+		
+		ArrayList<String> lines = new ArrayList<String> ();
+		FontMetrics fontMetrics = context.getFontMetrics();
+		
+		String currentString = "";
+		for(String token : tokens) {
+			
+			String temp = currentString + token;
+			// Check if we can add the next token without exceeding the width
+			if( width < fontMetrics.stringWidth(temp) ) {
+				lines.add(currentString);
+				currentString = token+" ";
+			}
+			else {
+				currentString = currentString + token+ " ";
+			}
+		}
+		// If there is something left in the currentString add it
+		if(!currentString.equals("")) {
+			lines.add(currentString);
+		}
+		
+		return lines;
 	}
 
 	public void paint(Graphics g) {
@@ -132,8 +162,19 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 				message = "Fetched: " + computer.getFullCurrentInstruction() + "(" + name + ")";
 			} else {
 				message = "Executed: " + computer.getFullCurrentInstruction() + "(" + name + ")\n";
-				String explanation = Mnemonic.explanation(computer.getFullCurrentInstruction());
-				graphic2d.drawString(explanation, memoryOffsetx + 2, 36 + memoryOffsety + spacing * 10);
+				
+				
+				//Fit the text to the available width
+				String description = Mnemonic.explanation(computer.getFullCurrentInstruction());
+				
+				ArrayList<String> explanations = fitToWidth(availableWidth,description
+						, graphic2d);
+				//
+				int sep = 0;
+				for(String line : explanations) {
+					graphic2d.drawString(line, memoryOffsetx +2, (sep * 20)+36 + memoryOffsety + spacing * 10);
+					sep++;
+				}
 			}
 		}
 

@@ -19,6 +19,7 @@
 *.tar.gz
 *.rar
 
+.tar.gz
 .DS_Store
 bin/
 

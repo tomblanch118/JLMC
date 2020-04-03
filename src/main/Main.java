@@ -10,6 +10,13 @@ import ui.EditorPanel;
 import ui.LMCDisplay;
 
 public class Main {
+	
+	// SetupBuilder for packaging as an application: https://github.com/i-net-software/SetupBuilder
+	// Test example in setupBuilderGradleWorkingExample.tar.gz
+	// Works locally, using a packaged version of java 1.8, test on other machines
+	
+	
+	//TODO: sanitize inputs and deal with large numbers in memory/acc
 	//TODO: packaging
 	/*
 	 * ~/Downloads/jdk-14.jdk/Contents/Home/bin/jpackage  --input ./ --java-options -splash:splash.png --name JLMC --mac-package-name JLMC --main-jar JLMC.jar
