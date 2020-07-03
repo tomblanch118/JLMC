@@ -44,7 +44,7 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 	private Editor codeEditor;
 	
 	private JTextArea editor = new JTextArea();
-	private JLabel error = new JLabel("   ");
+	private JTextArea error = new JTextArea();
 	private JLabel heading = new JLabel(Messages.getTranslatedString("CODE"));
 	private JButton compile = new JButton(Messages.getTranslatedString("COMPILE_BUTTON"));
 	private UndoManager undo = new UndoManager();
@@ -102,6 +102,9 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 			}
 		});
 
+		
+		error.setEditable(false);
+		error.setLineWrap(true);
 		// testUndo.addActionListener(this);
 		compile.addActionListener(this);
 		error.setOpaque(true);
@@ -117,9 +120,12 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 
 		JPanel extras = new JPanel();
 		extras.setLayout(new BorderLayout());
+		extras.setMinimumSize(new Dimension(400,100));
+		extras.setPreferredSize(new Dimension(400,100));
 		this.add(extras, BorderLayout.PAGE_END);
 		extras.add(error, BorderLayout.CENTER);
 		extras.add(compile, BorderLayout.PAGE_END);
+
 		// extras.add(testUndo, BorderLayout.PAGE_END);
 	}
 
