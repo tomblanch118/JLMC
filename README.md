@@ -1,7 +1,11 @@
 ![alt text](https://user-images.githubusercontent.com/7421219/74933274-8acf3500-53db-11ea-8a00-cb07bf14cace.png "Screen of JLMC")
 
 # JLMC
-Currently only a Mac installer is provided, just download JLMC-1.0.dmg and double click to install.
+A desktop version of the Little Man Computer created by Peter Higginson ( https://peterhigginson.co.uk/lmc/ ). Has the same feature set as the original but also some quality of life upgrades such as more helpful and verbose error checking (including looking at labels). Just download JLMC.jar and double click it to run. Make sure that you have Java 12 or higher installed.
+
+There is currenlty no bus / bus animation as from experience this tends to get old quite quickly.
+
+JLMC-1.0.dmg is an installer for Mac computers (OSX) but is for an older version. Just double click to install.
 
 # Usage
 Write code in the editor pane on the left and click compile to try to compile the code.
