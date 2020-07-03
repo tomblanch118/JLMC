@@ -1,4 +1,6 @@
-package main;
+package computer.instruction;
+
+import language.Messages;
 
 public enum Mnemonic {
 	ADD(100), SUB(200), STA(300), LDA(500), BRA(600), BRZ(700), BRP(800), INP(901), OUT(902), OTC(922), HLT(000), DAT(0);
@@ -70,41 +72,41 @@ public enum Mnemonic {
 		String s;
 
 		if (opCode == 901) {
-			s = "Read input into the accumulator";
+			s = Messages.getTranslatedString("READ_INPUT");
 		} else if (opCode == 902) {
-			s = "Write contents of accumulator to output";
+			s = Messages.getTranslatedString("WRITE_ACCUMULATOR");
 		} else if (opCode == 922) {
-			s = "Write contents of accumulator to output as a character";
+			s = Messages.getTranslatedString("WRITE_ACCUMULATOR_AS_CHAR");
 		} else if (opCode == 0) {
-			s = "Halts computer";
+			s = Messages.getTranslatedString("HALT_COMPUTER");
 		} else {
 			int instruction = opCode / 100;
 			int address = opCode % 100;
 
 			switch (instruction) {
 			case 1:
-				s = "Add contents of memory address " + address + " to accumulator.";
+				s = Messages.insertToken(Messages.getTranslatedString("ADD_MEM_ADDRESS"), ""+address);
 				break;
 			case 2:
-				s = "Subtract contents of memory address " + address + " from accumulator.";
+				s = Messages.insertToken(Messages.getTranslatedString("SUB_MEM_ADDRESS"), ""+address);
 				break;
 			case 3:
-				s = "Store contents of accumulator in memory address " + address + ".";
+				s = Messages.insertToken(Messages.getTranslatedString("STORE_IN_ADDRESS"), ""+address);;
 				break;
 			case 5:
-				s = "Load contents of memory address " + address + " into accumulator.";
+				s = Messages.insertToken(Messages.getTranslatedString("LOAD_MEM_ADDRESS"), ""+address);
 				break;
 			case 6:
-				s = "Set program counter to " + address + " (Branch).";
+				s = Messages.insertToken(Messages.getTranslatedString("SET_PC"), ""+address);
 				break;
 			case 7:
-				s = "If accumulator is 0, set program counter to " + address + "(Branch).";
+				s = Messages.insertToken(Messages.getTranslatedString("IF_ZERO"), ""+address);
 				break;
 			case 8:
-				s = "If accumulator is positive, set program counter to " + address + "(Branch).";
+				s = Messages.insertToken(Messages.getTranslatedString("IF_POSITIVE"), ""+address);
 				break;
 			default:
-				s = "I can't explain what that does!";
+				s = Messages.insertToken(Messages.getTranslatedString("CONFUSED"), ""+address);;
 			}
 		}
 

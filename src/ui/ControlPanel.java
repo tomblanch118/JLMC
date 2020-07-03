@@ -8,31 +8,31 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 import javax.swing.Timer;
 
+import computer.model.Computer;
+import computer.model.InputChannel;
 import language.Messages;
-import main.Computer;
-import main.InputChannel;
 
 
 @SuppressWarnings("serial")
-public class ControlPanel extends JPanel implements ActionListener, InputChannel, PropertyChangeListener {
-	private JButton run = new JButton(Messages.RUN_BUTTON);
-	private JButton stop = new JButton(Messages.STOP_BUTTON);
-	private JButton step = new JButton(Messages.STEP_BUTTON);
-	private JButton faster = new JButton(Messages.FASTER_BUTTON);
-	private JButton slower = new JButton(Messages.SLOWER_BUTTON);
-	private JButton reset = new JButton(Messages.RESET_BUTTON);
+public class ControlPanel extends JPanel implements ActionListener, InputChannel, PropertyChangeListener, LocalisationListener {
+	private JButton run = new JButton(Messages.getTranslatedString("RUN_BUTTON"));
+	private JButton stop = new JButton(Messages.getTranslatedString("STOP_BUTTON"));
+	private JButton step = new JButton(Messages.getTranslatedString("STEP_BUTTON"));
+	private JButton faster = new JButton(Messages.getTranslatedString("FASTER_BUTTON"));
+	private JButton slower = new JButton(Messages.getTranslatedString("SLOWER_BUTTON"));
+	private JButton reset = new JButton(Messages.getTranslatedString("RESET_BUTTON"));
 
 	private Computer computer;
 	private Timer timer = new Timer(10, this);
 
 	public ControlPanel(Computer computer) {
 		
+		Messages.registerLocalisationListener(this);
 		//TODO: Look into doing spring layout properly
 		this.computer = computer;
 		SpringLayout layout = new SpringLayout();
@@ -81,7 +81,7 @@ public class ControlPanel extends JPanel implements ActionListener, InputChannel
 				step.setEnabled(false);
 				stop.setEnabled(false);
 				reset.setEnabled(true);
-				JOptionPane.showMessageDialog(this.getParent(), Messages.HALTED);
+				JOptionPane.showMessageDialog(this.getParent(), Messages.getTranslatedString("HALTED"));
 
 			}
 		} else if (e.getSource().equals(run)) {
@@ -143,8 +143,8 @@ public class ControlPanel extends JPanel implements ActionListener, InputChannel
 	public Integer readInput() {
 
 		Container parent = this.getParent();
-		String s = (String) JOptionPane.showInputDialog(parent, Messages.INPUT_PLEASE,
-				Messages.INPUT_TITLE, JOptionPane.PLAIN_MESSAGE, null, null, null);
+		String s = (String) JOptionPane.showInputDialog(parent, Messages.getTranslatedString("INPUT_PLEASE"),
+				Messages.getTranslatedString("INPUT_TITLE"), JOptionPane.PLAIN_MESSAGE, null, null, null);
 
 		int i = 0;
 		try {
@@ -153,14 +153,14 @@ public class ControlPanel extends JPanel implements ActionListener, InputChannel
 			if (i < 0) {
 				// TODO: warn user
 
-				JOptionPane.showMessageDialog(this.getParent(), Messages.INPUT_MUST_NUMBER);
+				JOptionPane.showMessageDialog(this.getParent(), Messages.getTranslatedString("INPUT_MUST_NUMBER"));
 				setReadyToRun();
 				computer.restart();
 				return null;
 			}
 
 		} catch (NumberFormatException nfe) {
-			JOptionPane.showMessageDialog(this.getParent(), Messages.NO_INPUT_FOUND );
+			JOptionPane.showMessageDialog(this.getParent(), Messages.getTranslatedString("NO_INPUT_FOUND") );
 
 			setReadyToRun();
 			computer.restart();
@@ -173,8 +173,19 @@ public class ControlPanel extends JPanel implements ActionListener, InputChannel
 	public void propertyChange(PropertyChangeEvent evt) {
 		if(evt.getPropertyName().equals("reset"))
 		{
-			System.out.println("reset");
+			//System.out.println("reset");
 			setReadyToRun();
 		}
+	}
+
+	@Override
+	public void relocalise() {
+		run.setText(Messages.getTranslatedString("RUN_BUTTON"));
+		stop.setText(Messages.getTranslatedString("STOP_BUTTON"));
+		step.setText(Messages.getTranslatedString("STEP_BUTTON"));
+		faster.setText(Messages.getTranslatedString("FASTER_BUTTON"));
+		slower.setText(Messages.getTranslatedString("SLOWER_BUTTON"));
+		reset.setText(Messages.getTranslatedString("RESET_BUTTON"));
+		
 	}
 }

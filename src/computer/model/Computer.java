@@ -1,8 +1,11 @@
-package main;
+package computer.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+
+import computer.instruction.AddressedInstruction;
+import computer.instruction.Instruction;
 
 /**
  * 

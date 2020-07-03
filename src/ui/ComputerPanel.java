@@ -12,14 +12,15 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import main.Computer;
-import main.Mnemonic;
+import computer.instruction.Mnemonic;
+import computer.model.Computer;
+import language.Messages;
 
 //TODO: property listeners to register running, step, stop events, current line
 //TODO: Tidy and comment
 //TODO: highlight current executing line.
 //TODO: Wrap text.
-public final class ComputerPanel extends JPanel implements PropertyChangeListener {
+public final class ComputerPanel extends JPanel implements PropertyChangeListener, LocalisationListener {
 
 	private static final long serialVersionUID = 1L;
 	private Computer computer;
@@ -32,40 +33,46 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 	private Color foreground = Color.white;
 	private Color highlight = Color.green;
 	private Color foregroundDim = Color.gray;
-
+	private int nextBoxY = 0;
 	private final Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 
 	public ComputerPanel(Computer computer) {
 		this.computer = computer;
 		this.setMinimumSize(new Dimension(500, 400));
 		this.setVisible(true);
+		Messages.registerLocalisationListener(this);
 	}
 
 	public Computer getComputer() {
 		return computer;
 	}
 
-	private void drawInBox(Graphics2D g, String label, int value, int x, int y) {
-		g.drawRect(x, y, 115, 35);
-		g.drawString(label, x + 2, y + 12);
-		g.drawString("" + value, x + 2, y + 26);
+	private void drawInBox(Graphics2D g, String label, int value, int x) {
+		String[] parts = label.split("\\ ");
+		if(parts.length == 2) {
+			
+			g.drawRect(x, nextBoxY, 115, 49);
+			g.drawString(parts[0], x + 2, nextBoxY + 12);
+			g.drawString(parts[1], x + 2, nextBoxY + 26);
+			g.drawString("" + value, x + 2, nextBoxY + 40);
+			nextBoxY += 54;
+		} else {
+			g.drawRect(x, nextBoxY, 115, 35);
+			g.drawString(label, x + 2, nextBoxY + 12);
+			g.drawString("" + value, x + 2, nextBoxY + 26);
+			nextBoxY += 39;
+		}
 	}
 
-	private void drawInBox(Graphics2D g, String label, String label2, int value, int x, int y) {
-		g.drawRect(x, y, 115, 49);
-		g.drawString(label, x + 2, y + 12);
-		g.drawString(label2, x + 2, y + 26);
-		g.drawString("" + value, x + 2, y + 40);
-	}
 
-	private void drawOutputBox(Graphics2D g, String label, String[] values, int x, int y) {
-		g.drawRect(x, y, 115, 88);
-		g.drawString(label, x + 2, y + 12);
+	private void drawOutputBox(Graphics2D g, String label, String[] values, int x) {
+		g.drawRect(x, nextBoxY, 115, 88);
+		g.drawString(label, x + 2, nextBoxY + 12);
 
 		for (int i = 0; i < values.length; i++) {
-			g.drawString(values[i], x + 2, y + 12 + ((i + 1) * 14));
+			g.drawString(values[i], x + 2, nextBoxY + 12 + ((i + 1) * 14));
 		}
-
+		nextBoxY += 93;
 	}
 	
 	private ArrayList<String> fitToWidth(int width, String text, Graphics context) {
@@ -142,26 +149,27 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 		// Draw various registers
 		int textX = 10;
 		int textY = 10;
-		drawInBox(graphic2d, "Program Counter", computer.getProgramCounter(), textX, textY);
-		drawInBox(graphic2d, "Instruction", "Register", computer.getInstructionRegister(), textX, textY + 40);
-		drawInBox(graphic2d, "Address", "Register", computer.getAddressRegister(), textX, textY + 94);
-		drawInBox(graphic2d, "Accumulator", computer.getAccumulator(), textX, textY + 148);
-		drawInBox(graphic2d, "Input", computer.getInput(), textX, textY + 188);
-		drawOutputBox(graphic2d, "Output", computer.getOutput(), textX, textY + 228);
+		nextBoxY = textY;
+		drawInBox(graphic2d, Messages.getTranslatedString("PROGRAM_COUNTER"), computer.getProgramCounter(), textX);
+		drawInBox(graphic2d, Messages.getTranslatedString("INSTRUCTION_REGISTER"), computer.getInstructionRegister(), textX);
+		drawInBox(graphic2d, Messages.getTranslatedString("ADDRESS_REGISTER"), computer.getAddressRegister(), textX);
+		drawInBox(graphic2d, Messages.getTranslatedString("ACCUMULATOR"), computer.getAccumulator(), textX);
+		drawInBox(graphic2d, Messages.getTranslatedString("INPUT"), computer.getInput(), textX);
+		drawOutputBox(graphic2d, Messages.getTranslatedString("OUTPUT"), computer.getOutput(), textX);
 
 		graphic2d.drawRect(memoryOffsetx, memoryOffsety + spacing * 10, availableWidth, 100);
 
 		String message = "";
 		if (computer.isHalted()) {
-			message = "Halted.";
+			message = Messages.getTranslatedString("HALTED");
 		} else {
 			boolean fetch = computer.isFetch();
 			String name = Mnemonic.instructionName(computer.getFullCurrentInstruction());
 
 			if (fetch) {
-				message = "Fetched: " + computer.getFullCurrentInstruction() + "(" + name + ")";
+				message = Messages.getTranslatedString("FETCHED")+": " + computer.getFullCurrentInstruction() + "(" + name + ")";
 			} else {
-				message = "Executed: " + computer.getFullCurrentInstruction() + "(" + name + ")\n";
+				message = Messages.getTranslatedString("EXECUTED")+": " + computer.getFullCurrentInstruction() + "(" + name + ")\n";
 				
 				
 				//Fit the text to the available width
@@ -179,8 +187,8 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 		}
 
 		graphic2d.drawString(message, memoryOffsetx + 2, 16 + memoryOffsety + spacing * 10);
-		String speed = "CPU Speed: "+computer.getCpuSpeed()+" Hz";
-		graphic2d.drawString(speed, 2, 16 + memoryOffsety + spacing * 10);
+
+		drawInBox(graphic2d, Messages.getTranslatedString("CPU_SPEED"), computer.getCpuSpeed(), textX);
 	}
 
 	@Override
@@ -190,5 +198,10 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 			this.repaint();
 		}
 
+	}
+
+	@Override
+	public void relocalise() {
+		this.repaint();
 	}
 }

@@ -1,4 +1,4 @@
-package main;
+package computer.instruction;
 
 public class Instruction implements Comparable<Instruction>{
 	private final Mnemonic mnemonic;

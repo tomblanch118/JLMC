@@ -1,10 +1,16 @@
-package main;
+package computer.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import computer.instruction.AddressedInstruction;
+import computer.instruction.Instruction;
+import computer.instruction.Mnemonic;
+
+import computer.ParseException;
 
 import language.Messages;
 
@@ -122,7 +128,7 @@ public class Editor {
 			line = line.trim();
 			
 			if(line.length() == 0){
-				throw new ParseException(Messages.S_ERR_COMMENT_EOL, "",address);
+				throw new ParseException(Messages.getTranslatedString("S_ERR_COMMENT_EOL"), "",address);
 			}
 
 			parse(line, address);
@@ -147,7 +153,7 @@ public class Editor {
 						}
 					}
 				}
-				throw new ParseException(Messages.L_ERR_NOT_DEFINED,s, lineNumber);
+				throw new ParseException(Messages.getTranslatedString("L_ERR_NOT_DEFINED"),s, lineNumber);
 			}
 		}
 
@@ -159,7 +165,7 @@ public class Editor {
 	private void parseInstruction(String[] tokens, int lineNumber) throws ParseException {
 		//First token is a label
 		if (!isInstruction(tokens[0])) {
-			throw new ParseException(Messages.S_ERR_INSTRUCTION_EXPECTED, tokens[0],lineNumber);
+			throw new ParseException(Messages.getTranslatedString("S_ERR_INSTRUCTION_EXPECTED"), tokens[0],lineNumber);
 		
 			//First token is NOT a label it is a valid instruction
 		} else {
@@ -171,7 +177,7 @@ public class Editor {
 				
 				//If the instruction does not take a parameter but there is a parameter throw exception
 				if (tokens.length == 2) {
-					throw new ParseException(Messages.S_ERR_POINTLESS_PARAMETER,tokens[0],lineNumber);
+					throw new ParseException(Messages.getTranslatedString("S_ERR_POINTLESS_PARAMETER"),tokens[0],lineNumber);
 				}
 				
 				//Create a new instruction and add it
@@ -194,7 +200,7 @@ public class Editor {
 
 					// If instruction is not DAT and parameter is missing throw exception
 					} else {
-						throw new ParseException(Messages.S_ERR_PARAMETER_EXPECTED,tokens[0], lineNumber);
+						throw new ParseException(Messages.getTranslatedString("S_ERR_PARAMETER_EXPECTED"),tokens[0], lineNumber);
 					}
 				//Parameter is available for this instruction
 				} else {
@@ -208,7 +214,7 @@ public class Editor {
 							int a = Integer.parseInt(tokens[1]);
 							if(a >= Computer.memorySize || a < 0)
 							{
-								throw new ParseException(Messages.S_ERR_ADDRESS, tokens[1], lineNumber);
+								throw new ParseException(Messages.getTranslatedString("S_ERR_ADDRESS"), tokens[1], lineNumber);
 
 							}
 							instruction = new AddressedInstruction(Mnemonic.valueOf(tokens[0]), lineNumber,a);
@@ -221,7 +227,7 @@ public class Editor {
 						instructions.add(instruction);
 
 					} else {
-						throw new ParseException(Messages.S_ERR_LABEL_NAME, tokens[1], lineNumber);
+						throw new ParseException(Messages.getTranslatedString("S_ERR_LABEL_NAME"), tokens[1], lineNumber);
 					}
 				}
 			}
@@ -248,7 +254,7 @@ public class Editor {
 					String label = ai.getTargetLabel();
 
 					if (!labels.containsKey(label)) {
-						throw new ParseException(Messages.L_ERR_LABEL_UNLINKED, ai.getMnemonic().toString(),
+						throw new ParseException(Messages.getTranslatedString("L_ERR_LABEL_UNLINKED"), ai.getMnemonic().toString(),
 								ai.getInstructionAddress());
 					} else {
 						int address = labels.get(label);
@@ -264,7 +270,7 @@ public class Editor {
 		String[] tokens = line.split("\\s+");
 
 		if (tokens.length > 3) {
-			throw new ParseException(Messages.S_ERR_TOO_MANY_TOKENS,line,lineNumber);
+			throw new ParseException(Messages.getTranslatedString("S_ERR_TOO_MANY_TOKENS"),line,lineNumber);
 		}
 
 		if (!isInstruction(tokens[0])) {
@@ -272,12 +278,12 @@ public class Editor {
 			// If we dont have an instruction, we have a label and a label cant be a number
 			if(isNumber(tokens[0]))
 			{
-				throw new ParseException(Messages.S_ERR_NUMBER_NOT_LABEL, tokens[0], lineNumber);
+				throw new ParseException(Messages.getTranslatedString("S_ERR_NUMBER_NOT_LABEL"), tokens[0], lineNumber);
 			}
 			
 			// Cannot have a label all by itself
 			if (tokens.length == 1) {
-				throw new ParseException(Messages.S_ERR_LONELY_LABEL, line, lineNumber);
+				throw new ParseException(Messages.getTranslatedString("S_ERR_LONELY_LABEL"), line, lineNumber);
 			}
 
 			// If we have alread 

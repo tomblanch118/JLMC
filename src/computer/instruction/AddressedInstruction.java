@@ -1,4 +1,4 @@
-package main;
+package computer.instruction;
 
 public class AddressedInstruction extends Instruction{
 	private boolean addressResolved;

@@ -1,9 +1,14 @@
-package main;
+package computer;
+
+import java.util.Locale;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import computer.model.Computer;
+import computer.model.Editor;
+import language.Messages;
 import ui.ComputerPanel;
 import ui.ControlPanel;
 import ui.EditorPanel;
@@ -32,6 +37,8 @@ public class Main {
 	// https://github.com/UltraMixer/JarBundler Interesting looking bundling tool
 	
 	public static void main(String[] args) {
+		Messages.setCurrentLocale(Locale.ENGLISH);
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				Computer computer = new Computer();

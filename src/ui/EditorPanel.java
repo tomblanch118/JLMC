@@ -27,18 +27,17 @@ import javax.swing.text.Highlighter;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
+import computer.ParseException;
+import computer.model.Editor;
 import language.Messages;
 
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
-
-import main.Editor;
-import main.ParseException;
 
 //TODO: LANGUAGE PACKS!
 //TODO: Intermediate output (ops to numeric code and labels resolved to addresses)
 
 @SuppressWarnings("serial")
-public class EditorPanel extends JPanel implements ActionListener {
+public class EditorPanel extends JPanel implements ActionListener, LocalisationListener {
 	
 	// Reference to the Editor that is responsible for parsing the content
 	// of this Editor Panel
@@ -46,7 +45,8 @@ public class EditorPanel extends JPanel implements ActionListener {
 	
 	private JTextArea editor = new JTextArea();
 	private JLabel error = new JLabel("   ");
-	private JButton compile = new JButton(Messages.COMPILE_BUTTON);
+	private JLabel heading = new JLabel(Messages.getTranslatedString("CODE"));
+	private JButton compile = new JButton(Messages.getTranslatedString("COMPILE_BUTTON"));
 	private UndoManager undo = new UndoManager();
 	private ComputerPanel cp;
 
@@ -61,6 +61,7 @@ public class EditorPanel extends JPanel implements ActionListener {
 		this.setMinimumSize(new Dimension(400, 400));
 		this.setPreferredSize(new Dimension(400, 400));
 		
+		Messages.registerLocalisationListener(this);
 		//TODO: stop undo from going to blank
 		// Set up the undo/redo key bindings
 		editor.getInputMap().put(KeyStroke.getKeyStroke("control Z"), new AbstractAction("Undo")
@@ -111,7 +112,7 @@ public class EditorPanel extends JPanel implements ActionListener {
 
 		JScrollPane scroller = new JScrollPane(editor);
 		this.setLayout(new BorderLayout());
-		this.add(new JLabel("Code: "), BorderLayout.PAGE_START);
+		this.add(heading, BorderLayout.PAGE_START);
 		this.add(scroller, BorderLayout.CENTER);
 
 		JPanel extras = new JPanel();
@@ -153,7 +154,7 @@ public class EditorPanel extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println(e.getActionCommand());
+		//System.out.println(e.getActionCommand());
 	
 		if (e.getSource().equals(compile)) {
 
@@ -176,7 +177,7 @@ public class EditorPanel extends JPanel implements ActionListener {
 
 				codeEditor.parse();
 				editor.setText(codeEditor.format());
-				error.setText(Messages.EDITOR_SUCCESS_MESSAGE);
+				error.setText(Messages.getTranslatedString("EDITOR_SUCCESS_MESSAGE"));
 				error.setBackground(green);
 				cp.getComputer().load(codeEditor.getInstructions());
 				cp.repaint();
@@ -185,7 +186,7 @@ public class EditorPanel extends JPanel implements ActionListener {
 
 				// System.out.println(e2.getMessage() + "\n" + e2.getBadToken() + "\n" +
 				// e2.getLineNumber());
-				error.setText("Line " + e2.getLineNumber() + ": " + e2.getMessage());
+				error.setText(Messages.getTranslatedString("LINE")+ " " + e2.getLineNumber() + ": " + e2.getMessage());
 				error.setBackground(red);
 				try {
 					Highlighter h = editor.getHighlighter();
@@ -202,5 +203,12 @@ public class EditorPanel extends JPanel implements ActionListener {
 			}
 			cp.repaint();
 		}
+	}
+
+	@Override
+	public void relocalise() {
+		heading.setText(Messages.getTranslatedString("CODE"));
+		compile.setText(Messages.getTranslatedString("COMPILE_BUTTON"));
+		compile.doClick();
 	}
 }
