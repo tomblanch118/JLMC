@@ -16,25 +16,9 @@ import ui.LMCDisplay;
 
 public class Main {
 	
-	// SetupBuilder for packaging as an application: https://github.com/i-net-software/SetupBuilder
-	// Test example in setupBuilderGradleWorkingExample.tar.gz
-	// Works locally, using a packaged version of java 1.8, test on other machines
-	
-	
-	//TODO: sanitize inputs and deal with large numbers in memory/acc
-	//TODO: packaging
-	/*
-	 * ~/Downloads/jdk-14.jdk/Contents/Home/bin/jpackage  --input ./ --java-options -splash:splash.png --name JLMC --mac-package-name JLMC --main-jar JLMC.jar
-	 */
-	
-	// -Xdock:name="JLMC" -Xdock:icon=jlmc.png
-	// Splashscreen must be set in jar manifest as SplashScreen-Image: splash.png
-	// splash 
-	// https://www.youtube.com/watch?v=kwdK6Dg1a_Y
-	// Can probably make an ant task to do this?
-	
-	// https://github.com/tofi86/universalJavaApplicationStub
-	// https://github.com/UltraMixer/JarBundler Interesting looking bundling tool
+	//Splash screen isn't working with this but I think it needs to be a part of the manifest. Doesn't really matter anyway
+	//Home/bin/jpackage --name JLMC --arguments -Xdock:name="JLMC" --arguments -Xdock:icon="jlmc.png" --arguments -splash:"splash.png" --icon ~/Documents/eclipse_workspace/LMC\ Project/res/jlmc.icns   --input ~/Documents/eclipse_workspace/LMC\ Project/ --main-jar JLMC.jar
+
 	
 	public static void main(String[] args) {
 		Messages.setCurrentLocale(Locale.ENGLISH);

@@ -5,7 +5,7 @@ A desktop version of the Little Man Computer created by Peter Higginson ( https:
 
 There is currenlty no bus / bus animation as from experience this tends to get old quite quickly.
 
-JLMC-1.0.dmg is an installer for Mac computers (OSX) but is for an older version. Just double click to install.
+Working on generating installers.
 
 # Usage
 Write code in the editor pane on the left and click compile to try to compile the code.
