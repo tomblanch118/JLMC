@@ -309,7 +309,7 @@ public class Editor {
 
 	}
 
-	private boolean isInstruction(String token) {
+	public static boolean isInstruction(String token) {
 		token = token.toUpperCase();
 		switch (token) {
 		case "INP":

@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,6 +63,7 @@ public class LMCDisplay extends JFrame implements ActionListener, LocalisationLi
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setMinimumSize(new Dimension(900, 600));
 		this.setSize(new Dimension(900, 600));
+	
 		
 		Messages.registerLocalisationListener(this);
 
@@ -102,7 +104,9 @@ public class LMCDisplay extends JFrame implements ActionListener, LocalisationLi
 		// Set up the split plane
 		splitPane.setLeftComponent(ep);
 		splitPane.setRightComponent(rightSidePanel);
-
+		splitPane.setBackground(ColorScheme.button);
+		//splitPane.setForeground(Color.WHITE);
+		splitPane.setBorder(null);
 		this.getContentPane().add(splitPane);
 		this.pack();
 		this.setVisible(true);

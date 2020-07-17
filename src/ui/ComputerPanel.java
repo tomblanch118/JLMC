@@ -29,10 +29,6 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 	private final int memoryOffsetx = 135;
 	private final int memoryOffsety = 20;
 
-	private Color background = Color.black;
-	private Color foreground = Color.white;
-	private Color highlight = Color.green;
-	private Color foregroundDim = Color.gray;
 	private int nextBoxY = 0;
 	private final Font font = new Font(Font.MONOSPACED, Font.PLAIN, 12);
 
@@ -50,14 +46,17 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 	private void drawInBox(Graphics2D g, String label, int value, int x) {
 		String[] parts = label.split("\\ ");
 		if(parts.length == 2) {
-			
+			g.setColor(ColorScheme.orange);
 			g.drawRect(x, nextBoxY, 115, 49);
+			g.setColor(ColorScheme.green);
 			g.drawString(parts[0], x + 2, nextBoxY + 12);
 			g.drawString(parts[1], x + 2, nextBoxY + 26);
 			g.drawString("" + value, x + 2, nextBoxY + 40);
 			nextBoxY += 54;
 		} else {
+			g.setColor(ColorScheme.orange);
 			g.drawRect(x, nextBoxY, 115, 35);
+			g.setColor(ColorScheme.green);
 			g.drawString(label, x + 2, nextBoxY + 12);
 			g.drawString("" + value, x + 2, nextBoxY + 26);
 			nextBoxY += 39;
@@ -66,7 +65,10 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 
 
 	private void drawOutputBox(Graphics2D g, String label, String[] values, int x) {
+		g.setColor(ColorScheme.orange);
 		g.drawRect(x, nextBoxY, 115, 88);
+		g.setColor(ColorScheme.green);
+
 		g.drawString(label, x + 2, nextBoxY + 12);
 
 		for (int i = 0; i < values.length; i++) {
@@ -107,11 +109,11 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 		Dimension size = this.getSize();
 		Graphics2D graphic2d = (Graphics2D) g;
 
-		graphic2d.setColor(background);
+		graphic2d.setColor(ColorScheme.background);
 		graphic2d.fillRect(0, 0, size.width, size.height);
 
 		graphic2d.setFont(font);
-		graphic2d.setColor(foreground);
+		graphic2d.setColor(ColorScheme.orange);
 
 		int availableWidth = ((size.width < size.height) ? size.width : size.height) - 150;
 
@@ -128,15 +130,15 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 			String memory = String.format("%03d", computer.getMemory(i));
 
 			if (i < computer.getHighestUsedAddress() + 1) {
-				graphic2d.setColor(foreground);
+				graphic2d.setColor(ColorScheme.blueLight);
 
 			} else {
-				graphic2d.setColor(foregroundDim);
+				graphic2d.setColor(ColorScheme.blueDark);
 			}
 			graphic2d.drawString(memory, x + 7, offset + y);
 
 			if (i == currentPC) {
-				graphic2d.setColor(highlight);
+				graphic2d.setColor(ColorScheme.green);
 			}
 
 			graphic2d.drawString(""+i, x + 8, y);
@@ -144,7 +146,7 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 			graphic2d.drawRect(x + 6, y + 4, 25, 15);
 		}
 
-		graphic2d.setColor(foreground);
+		graphic2d.setColor(ColorScheme.green);
 
 		// Draw various registers
 		int textX = 10;
@@ -157,8 +159,10 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 		drawInBox(graphic2d, Messages.getTranslatedString("INPUT"), computer.getInput(), textX);
 		drawOutputBox(graphic2d, Messages.getTranslatedString("OUTPUT"), computer.getOutput(), textX);
 
+		graphic2d.setColor(ColorScheme.orange);
 		graphic2d.drawRect(memoryOffsetx, memoryOffsety + spacing * 10, availableWidth, 100);
-
+		graphic2d.setColor(ColorScheme.green);
+		
 		String message = "";
 		if (computer.isHalted()) {
 			message = Messages.getTranslatedString("HALTED");

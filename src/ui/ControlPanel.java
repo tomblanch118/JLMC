@@ -1,5 +1,6 @@
 package ui;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -52,6 +53,14 @@ public class ControlPanel extends JPanel implements ActionListener, InputChannel
 		this.add(slower);
 		this.add(faster);
 		this.add(reset);
+		
+		styleButton(run);
+		styleButton(stop);
+		styleButton(step);
+		styleButton(slower);
+		styleButton(faster);
+		styleButton(reset);
+	
 		//this.add(speed);
 		
 		this.setMinimumSize(new Dimension(400,35));
@@ -63,6 +72,8 @@ public class ControlPanel extends JPanel implements ActionListener, InputChannel
 		faster.addActionListener(this);
 		slower.addActionListener(this);
 		reset.addActionListener(this);
+		
+		this.setBackground(ColorScheme.background);
 
 		setCPUSpeed();
 		setReadyToRun();
@@ -70,6 +81,13 @@ public class ControlPanel extends JPanel implements ActionListener, InputChannel
 		
 	}
 
+	private void styleButton(JButton button) {
+		button.setOpaque(true);
+		button.setBorderPainted(false);
+		button.setBackground(ColorScheme.button);
+		button.setForeground(Color.WHITE);
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(timer) || e.getSource().equals(step)) {
