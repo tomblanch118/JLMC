@@ -323,6 +323,7 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 	 * @param currentLineOnly Whether we should process the current line only or the entire contents
 	 */
 	private void doSyntax(boolean currentLineOnly) {
+		//TODO: BUG WITH LINE ONLY SYNTAX HIGHLIGHTING
 		int caretPos = editor.getCaretPosition();
 		
 		Document doc = editor.getDocument();
@@ -371,7 +372,9 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 		}
 		
 		if(!token.equals("")) {
+			System.out.println(token);
 			colourToken(token, code.length());
+			
 		}
 
 		editor.setCaretPosition(caretPos);
@@ -418,7 +421,7 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 
 		if(!(e.getKeyCode() == KeyEvent.VK_A && a == Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) &&
 				font.canDisplay(e.getKeyChar())) {
-			doSyntax(true);
+			doSyntax(false);
 		}
 		
 	}

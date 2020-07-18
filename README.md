@@ -1,9 +1,9 @@
-![alt text](https://user-images.githubusercontent.com/7421219/74933274-8acf3500-53db-11ea-8a00-cb07bf14cace.png "Screen of JLMC")
+![alt text](https://user-images.githubusercontent.com/7421219/87862661-66579480-c94a-11ea-86dd-451b8e89cf6c.png "Screen of JLMC")
 
 # JLMC
-A desktop version of the Little Man Computer created by Peter Higginson ( https://peterhigginson.co.uk/lmc/ ). Has the same feature set as the original but also some quality of life upgrades such as more helpful and verbose error checking (including looking at labels). Just download JLMC.jar and double click it to run. Make sure that you have Java 12 or higher installed.
+A desktop version of the Little Man Computer created by Peter Higginson ( https://peterhigginson.co.uk/lmc/ ). Has the same feature set as the original but also some quality of life upgrades such as more **support for different languages** (currently english & Welsh), **helpful and verbose error checking** (including looking at labels) and **syntax highlighting**. Just download JLMC.jar and double click it to run. Jave 8+ required.
 
-There is currenlty no bus / bus animation as from experience this tends to get old quite quickly.
+There is currently no bus / bus animation as from experience this tends to get old quite quickly.
 
 Working on generating installers.
 
