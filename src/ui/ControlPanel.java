@@ -79,6 +79,7 @@ public class ControlPanel extends JPanel implements ActionListener, InputChannel
 	}
 
 	private void styleButton(JButton button) {
+		button.setContentAreaFilled(false);
 		button.setOpaque(true);
 		button.setBorderPainted(false);
 		button.setBackground(ColorScheme.button);

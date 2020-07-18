@@ -51,6 +51,7 @@ import computer.model.Editor;
 import language.Messages;
 
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
+import javax.swing.text.Document;
 import javax.swing.text.Element;
 
 //TODO: Intermediate output (ops to numeric code and labels resolved to addresses)
@@ -183,6 +184,7 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 		extras.add(error, BorderLayout.CENTER);
 		extras.add(compile, BorderLayout.PAGE_END);
 		extras.setBackground(ColorScheme.background);
+		compile.setContentAreaFilled(false);
 		compile.setOpaque(true);
 		compile.setBorderPainted(false);
 		compile.setBackground(ColorScheme.button);
@@ -238,6 +240,10 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 			// ----end of shittyness-----
 
 			codeEditor.setText(editor.getText());
+			
+			Highlighter h = editor.getHighlighter();
+			h.removeAllHighlights();
+
 
 			try {
 
@@ -256,13 +262,12 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 				error.setText(Messages.getTranslatedString("LINE") + " " + e2.getLineNumber() + ": " + e2.getMessage());
 				error.setBackground(red);
 
-				Highlighter h = editor.getHighlighter();
 
 				highlightLine(e2.getLineNumber(), h);
 
 			}
 			//TODO: fix error highlighting
-			//doSyntax(false);
+			doSyntax(false);
 			cp.repaint();
 		}
 	}
@@ -273,7 +278,6 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 			return;
 		}
 
-		h.removeAllHighlights();
 
 		String text = editor.getText();
 		int currentLine = 0;
@@ -320,8 +324,18 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 	 */
 	private void doSyntax(boolean currentLineOnly) {
 		int caretPos = editor.getCaretPosition();
-		String code = editor.getText();
-
+		
+		Document doc = editor.getDocument();
+		String code = "";
+		
+		//Fix for windows as the carriage return interferes if we just go editor.getText()
+		try {
+			code = doc.getText(0, doc.getLength());
+		} catch (BadLocationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		int start = 0;
 		int end = code.length();
 		if(currentLineOnly) {
@@ -364,7 +378,6 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 	}
 
 	private void colourToken(String token, int pos) {
-
 
 		try {
 			if (Editor.isInstruction(token)) {
