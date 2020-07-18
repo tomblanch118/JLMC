@@ -16,10 +16,8 @@ import computer.instruction.Mnemonic;
 import computer.model.Computer;
 import language.Messages;
 
-//TODO: property listeners to register running, step, stop events, current line
 //TODO: Tidy and comment
 //TODO: highlight current executing line.
-//TODO: Wrap text.
 public final class ComputerPanel extends JPanel implements PropertyChangeListener, LocalisationListener {
 
 	private static final long serialVersionUID = 1L;
@@ -125,7 +123,7 @@ public final class ComputerPanel extends JPanel implements PropertyChangeListene
 
 		for (int i = 0; i < 100; i++) {
 			int x = memoryOffsetx + spacing * (i % 10);
-			int y = memoryOffsety + spacing * (i / 10);
+			int y = 3 + memoryOffsety + spacing * (i / 10);
 
 			String memory = String.format("%03d", computer.getMemory(i));
 

@@ -22,8 +22,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		Messages.setCurrentLocale(Locale.ENGLISH);
-		
-		
+
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				Computer computer = new Computer();

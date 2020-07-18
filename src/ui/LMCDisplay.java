@@ -3,6 +3,7 @@ package ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -19,6 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import language.Messages;
 
@@ -104,7 +107,21 @@ public class LMCDisplay extends JFrame implements ActionListener, LocalisationLi
 		// Set up the split plane
 		splitPane.setLeftComponent(ep);
 		splitPane.setRightComponent(rightSidePanel);
-		splitPane.setBackground(ColorScheme.button);
+		splitPane.setBackground(ColorScheme.comment);
+		splitPane.setDividerSize(4);
+		splitPane.setUI(new BasicSplitPaneUI() {
+		    @Override
+		    public BasicSplitPaneDivider createDefaultDivider() {
+		        return new BasicSplitPaneDivider(this) {
+		            private static final long serialVersionUID = -6000773723083732304L;
+
+		            @Override
+		            public void paint(Graphics g) {
+
+		            }
+		        };
+		    }
+		});
 		//splitPane.setForeground(Color.WHITE);
 		splitPane.setBorder(null);
 		this.getContentPane().add(splitPane);

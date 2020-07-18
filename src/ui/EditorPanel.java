@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -34,17 +34,24 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
+import javax.swing.text.ParagraphView;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import javax.swing.text.StyledEditorKit;
+import javax.swing.text.Utilities;
+import javax.swing.text.View;
+import javax.swing.text.ViewFactory;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
+
 
 import computer.ParseException;
 import computer.model.Editor;
 import language.Messages;
 
 import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
+import javax.swing.text.Element;
 
 //TODO: Intermediate output (ops to numeric code and labels resolved to addresses)
 
@@ -69,8 +76,14 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 	// Error message colours
 	private Color green = new Color(133, 252, 131);
 	private Color red = new Color(235, 142, 131);
+	
+	private SimpleAttributeSet instr = new SimpleAttributeSet();
+	private SimpleAttributeSet label = new SimpleAttributeSet();
+	private SimpleAttributeSet comment = new SimpleAttributeSet();
+	private SimpleAttributeSet number = new SimpleAttributeSet();
 
-	Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+
+	private Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
 	public EditorPanel(Editor codeEditor, ComputerPanel cp) {
 		this.codeEditor = codeEditor;
@@ -78,8 +91,16 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 		this.setMinimumSize(new Dimension(400, 400));
 		this.setPreferredSize(new Dimension(400, 400));
 		this.setBackground(ColorScheme.background);
+		
+		StyleConstants.setForeground(instr, ColorScheme.blueLight);
+		StyleConstants.setForeground(label, ColorScheme.green);
+		StyleConstants.setForeground(comment, ColorScheme.comment);
+		StyleConstants.setForeground(number, ColorScheme.orange);
+
+		
+		editor.setEditorKit(new ExtendedStyledEditorKit());
 		editor.setBackground(ColorScheme.background);
-		editor.setForeground(ColorScheme.green);
+		editor.setForeground(Color.WHITE);
 		editor.setCaretColor(Color.WHITE);
 
 		editor.addKeyListener(this);
@@ -144,17 +165,17 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 
 		editor.setEditable(true);
 		editor.setFont(font);
-
-		JScrollPane scroller = new JScrollPane(editor);
-		// scroller.setBackground(ColorScheme.button);
-		// scroller.setForeground(ColorScheme.orange);
+	
+		JScrollPane scroller = new JScrollPane(editor);		
 		scroller.setBorder(null);
+		
 		
 		this.setLayout(new BorderLayout());
 		// this.add(heading, BorderLayout.PAGE_START);
 		this.add(scroller, BorderLayout.CENTER);
 
 		JPanel extras = new JPanel();
+		extras.setBorder(new EmptyBorder(4,4,4,4));
 		extras.setLayout(new BorderLayout());
 		extras.setMinimumSize(new Dimension(400, 100));
 		extras.setPreferredSize(new Dimension(400, 100));
@@ -167,7 +188,6 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 		compile.setBackground(ColorScheme.button);
 		compile.setForeground(Color.WHITE);
 
-		// extras.add(testUndo, BorderLayout.PAGE_END);
 	}
 
 	public void saveFile(File file) {
@@ -226,7 +246,7 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 				error.setText(Messages.getTranslatedString("EDITOR_SUCCESS_MESSAGE"));
 				error.setBackground(green);
 				cp.getComputer().load(codeEditor.getInstructions());
-				doSyntax();
+				
 				cp.repaint();
 
 			} catch (ParseException e2) {
@@ -241,6 +261,8 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 				highlightLine(e2.getLineNumber(), h);
 
 			}
+			//TODO: fix error highlighting
+			//doSyntax(false);
 			cp.repaint();
 		}
 	}
@@ -287,19 +309,34 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 		border.setTitle(Messages.getTranslatedString("CODE"));
 		compile.setText(Messages.getTranslatedString("COMPILE_BUTTON"));
 		compile.doClick();
-		//TODO: cause the border to refresh so the code word translates.
+		this.repaint();
 	}
 
 	// test
 
-	private void doSyntax() {
+	/**
+	 * Does syntax highlighting of the editor textpane
+	 * @param currentLineOnly Whether we should process the current line only or the entire contents
+	 */
+	private void doSyntax(boolean currentLineOnly) {
 		int caretPos = editor.getCaretPosition();
-
 		String code = editor.getText();
+
+		int start = 0;
+		int end = code.length();
+		if(currentLineOnly) {
+			try {
+				start = Utilities.getRowStart(editor, caretPos);
+				end = Utilities.getRowEnd(editor, caretPos);
+			} catch (BadLocationException e) {
+				//Ignore and use defaults
+				//TODO: probably log this
+			}
+		}
 		
 		String token = "";
 		boolean inComment = false;
-		for (int i = 0; i < code.length(); i++) {
+		for (int i = start; i < end; i++) {
 			
 			
 			if (!Character.isWhitespace(code.charAt(i))) {
@@ -327,18 +364,15 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 	}
 
 	private void colourToken(String token, int pos) {
-		SimpleAttributeSet instr = new SimpleAttributeSet();
-		StyleConstants.setForeground(instr, ColorScheme.blueLight);
-		SimpleAttributeSet label = new SimpleAttributeSet();
-		StyleConstants.setForeground(label, ColorScheme.green);
-		SimpleAttributeSet comment = new SimpleAttributeSet();
-		StyleConstants.setForeground(comment, ColorScheme.comment);
+
 
 		try {
 			if (Editor.isInstruction(token)) {
 				doc.replace(pos - token.length(), token.length(), token, instr);
 			} else if (token.startsWith("//")) {
 				doc.replace(pos - token.length(), token.length(), token, comment);
+			} else if (isInt(token)) {
+				doc.replace(pos - token.length(), token.length(), token, number);
 			} else {
 				doc.replace(pos - token.length(), token.length(), token, label);
 			}
@@ -347,6 +381,14 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 		}
 	}
 
+		private boolean isInt(String token) {
+			try {
+				Integer.parseInt(token);
+			} catch (NumberFormatException nfe) {
+				return false;
+			}
+			return true;
+		}
 
 
 	@Override
@@ -359,13 +401,59 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(!e.isActionKey()) {
-			doSyntax();
+		int a = e.getModifiersEx() & Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+
+		if(!(e.getKeyCode() == KeyEvent.VK_A && a == Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) &&
+				font.canDisplay(e.getKeyChar())) {
+			doSyntax(true);
 		}
 		
-		
-		
-		
+	}
+	/** To enable no wrap to JTextPane **/
+	static class ExtendedStyledEditorKit extends StyledEditorKit {
+	    private static final long serialVersionUID = 1L;
+
+	    private static final ViewFactory styledEditorKitFactory = (new StyledEditorKit()).getViewFactory();
+
+	    private static final ViewFactory defaultFactory = new ExtendedStyledViewFactory();
+
+	    public Object clone() {
+	        return new ExtendedStyledEditorKit();
+	    }
+
+	    public ViewFactory getViewFactory() {
+	        return defaultFactory;
+	    }
+
+	    /* The extended view factory */
+	    static class ExtendedStyledViewFactory implements ViewFactory {
+	        public View create(Element elem) {
+	            String elementName = elem.getName();
+	            if (elementName != null) {
+	                if (elementName.equals(AbstractDocument.ParagraphElementName)) {
+	                    return new ExtendedParagraphView(elem);
+	                }
+	            }
+
+	            // Delegate others to StyledEditorKit
+	            return styledEditorKitFactory.create(elem);
+	        }
+	    }
 
 	}
+	static class ExtendedParagraphView extends ParagraphView {
+	    public ExtendedParagraphView(Element elem) {
+	        super(elem);
+	    }
+
+	    @Override
+	    public float getMinimumSpan(int axis) {
+	        return super.getPreferredSpan(axis);
+	    }
+	}
+	
 }
+
+
+
+
