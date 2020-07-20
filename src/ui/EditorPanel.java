@@ -54,7 +54,6 @@ import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 
-//TODO: Intermediate output (ops to numeric code and labels resolved to addresses)
 
 @SuppressWarnings("serial")
 public class EditorPanel extends JPanel implements ActionListener, LocalisationListener, KeyListener {
@@ -65,7 +64,6 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 
 	private JTextPane editor = new JTextPane();
 	private JTextArea error = new JTextArea();
-	private JLabel heading = new JLabel(Messages.getTranslatedString("CODE"));
 	private JButton compile = new JButton(Messages.getTranslatedString("COMPILE_BUTTON"));
 	private UndoManager undo = new UndoManager();
 	private ComputerPanel cp;
@@ -78,45 +76,69 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 	private Color green = new Color(133, 252, 131);
 	private Color red = new Color(235, 142, 131);
 	
+	// Attribute sets that are used for syntax highlighting
 	private SimpleAttributeSet instr = new SimpleAttributeSet();
 	private SimpleAttributeSet label = new SimpleAttributeSet();
 	private SimpleAttributeSet comment = new SimpleAttributeSet();
 	private SimpleAttributeSet number = new SimpleAttributeSet();
 
-
+	// Editor font
 	private Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
 
+	/**
+	 * 
+	 * @param codeEditor
+	 * @param cp
+	 */
 	public EditorPanel(Editor codeEditor, ComputerPanel cp) {
 		this.codeEditor = codeEditor;
 		this.cp = cp;
+		
+		//Set some reasonable defaults so that the splitpane has something to work with
 		this.setMinimumSize(new Dimension(400, 400));
 		this.setPreferredSize(new Dimension(400, 400));
 		this.setBackground(ColorScheme.background);
 		
+		//Setup our syntax highlight styles/colours
 		StyleConstants.setForeground(instr, ColorScheme.blueLight);
 		StyleConstants.setForeground(label, ColorScheme.green);
 		StyleConstants.setForeground(comment, ColorScheme.comment);
 		StyleConstants.setForeground(number, ColorScheme.orange);
 
-		
+		//Needed to stop words from wrapping in the JTextPane
 		editor.setEditorKit(new ExtendedStyledEditorKit());
+		
+		//Style the editor
 		editor.setBackground(ColorScheme.background);
 		editor.setForeground(Color.WHITE);
 		editor.setCaretColor(Color.WHITE);
-
+		editor.setEditable(true);
+		editor.setFont(font);
 		editor.addKeyListener(this);
+		
+		//Create a nice border for the editor
+		Border lineBorder = BorderFactory.createLineBorder(ColorScheme.orange);
+		border = BorderFactory.createTitledBorder(lineBorder, Messages.getTranslatedString("CODE"), TitledBorder.CENTER, TitledBorder.TOP,
+				font, ColorScheme.orange);
+		
+
+		Border margin = new EmptyBorder(10, 10, 10, 10);
+		editor.setBorder(new CompoundBorder(border, margin));
+
+
+		//Get the document model that backs the TextPane
 		StyledDocument styledDoc = editor.getStyledDocument();
 		if (styledDoc instanceof AbstractDocument) {
 			doc = (AbstractDocument) styledDoc;
-			// doc.setDocumentFilter(new DocumentSizeFilter(MAX_CHARACTERS));
 		} else {
 			System.err.println("Text pane's document isn't an AbstractDocument!");
 			System.exit(-1);
 		}
-		// editor.setMargin(new Insets(20, 20, 20, 20));
+		
+		//Register ourselves to receive localisation events (allows translating of the UI at runtime)
 		Messages.registerLocalisationListener(this);
 
-		heading.setForeground(Color.white);
+		
 		// TODO: stop undo from going to blank
 		// Set up the undo/redo key bindings
 		editor.getInputMap().put(KeyStroke.getKeyStroke("control Z"), new AbstractAction("Undo") {
@@ -147,51 +169,45 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 			}
 		});
 
+		//Style the error/info textarea
 		error.setEditable(false);
 		error.setLineWrap(true);
-
-		compile.addActionListener(this);
-
 		error.setOpaque(true);
 		error.setBackground(green);
-
-		//TODO: Sort out translating the border
-		Border lineBorder = BorderFactory.createLineBorder(ColorScheme.orange);
-		border = BorderFactory.createTitledBorder(lineBorder, Messages.getTranslatedString("CODE"), TitledBorder.CENTER, TitledBorder.TOP,
-				font, ColorScheme.orange);
 		
-
-		Border margin = new EmptyBorder(10, 10, 10, 10);
-		editor.setBorder(new CompoundBorder(border, margin));
-
-		editor.setEditable(true);
-		editor.setFont(font);
-	
-		JScrollPane scroller = new JScrollPane(editor);		
-		scroller.setBorder(null);
-		
-		
-		this.setLayout(new BorderLayout());
-		// this.add(heading, BorderLayout.PAGE_START);
-		this.add(scroller, BorderLayout.CENTER);
-
-		JPanel extras = new JPanel();
-		extras.setBorder(new EmptyBorder(4,4,4,4));
-		extras.setLayout(new BorderLayout());
-		extras.setMinimumSize(new Dimension(400, 100));
-		extras.setPreferredSize(new Dimension(400, 100));
-		this.add(extras, BorderLayout.PAGE_END);
-		extras.add(error, BorderLayout.CENTER);
-		extras.add(compile, BorderLayout.PAGE_END);
-		extras.setBackground(ColorScheme.background);
+		//TODO: Probably a good place for a factory to get styled UI components
+		//TODO: should Compile actually be Assemble?
+		//Style the compile button
 		compile.setContentAreaFilled(false);
 		compile.setOpaque(true);
 		compile.setBorderPainted(false);
 		compile.setBackground(ColorScheme.button);
 		compile.setForeground(Color.WHITE);
+		compile.addActionListener(this);
 
+		//Setup the layouts for the Editor
+		JScrollPane scroller = new JScrollPane(editor);		
+		scroller.setBorder(null);		
+		this.setLayout(new BorderLayout());
+		this.add(scroller, BorderLayout.CENTER);
+
+		//Extra panel contains the compile button and error box
+		JPanel extras = new JPanel();
+		extras.setBorder(new EmptyBorder(4,4,4,4));
+		extras.setLayout(new BorderLayout());
+		extras.setMinimumSize(new Dimension(400, 100));
+		extras.setPreferredSize(new Dimension(400, 100));
+		
+		this.add(extras, BorderLayout.PAGE_END);
+		extras.add(error, BorderLayout.CENTER);
+		extras.add(compile, BorderLayout.PAGE_END);
+		extras.setBackground(ColorScheme.background);
 	}
 
+	/**
+	 * Saves the content of the editor
+	 * @param file
+	 */
 	public void saveFile(File file) {
 
 		String filename = file.getName();
@@ -207,6 +223,10 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 		}
 	}
 
+	/**
+	 * Loads in an lmc file
+	 * @param file
+	 */
 	public void loadFile(File file) {
 		try (Scanner scanner = new Scanner(file)) {
 			StringBuilder sb = new StringBuilder();
@@ -218,11 +238,11 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 		} catch (FileNotFoundException e) {
 
 		}
+		compile.doClick();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// System.out.println(e.getActionCommand());
 
 		if (e.getSource().equals(compile)) {
 
@@ -241,12 +261,12 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 
 			codeEditor.setText(editor.getText());
 			
+			//Remove any highlights that have been applied (showing errors etc)
 			Highlighter h = editor.getHighlighter();
 			h.removeAllHighlights();
 
-
+			// Try to parse the contents of the editor
 			try {
-
 				codeEditor.parse();
 				editor.setText(codeEditor.format());
 				error.setText(Messages.getTranslatedString("EDITOR_SUCCESS_MESSAGE"));
@@ -257,16 +277,12 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 
 			} catch (ParseException e2) {
 
-				// System.out.println(e2.getMessage() + "\n" + e2.getBadToken() + "\n" +
-				// e2.getLineNumber());
 				error.setText(Messages.getTranslatedString("LINE") + " " + e2.getLineNumber() + ": " + e2.getMessage());
 				error.setBackground(red);
-
 
 				highlightLine(e2.getLineNumber(), h);
 
 			}
-			//TODO: fix error highlighting
 			doSyntax(false);
 			cp.repaint();
 		}
@@ -298,7 +314,6 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 				currentLine++;
 			}
 		}
-		// System.out.println("start: "+start+", end: "+end);
 		try {
 
 			DefaultHighlightPainter p = new DefaultHighlighter.DefaultHighlightPainter(red);
@@ -308,6 +323,9 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 		}
 	}
 
+	/**
+	 * Relocalises the text in this UI
+	 */
 	@Override
 	public void relocalise() {
 		border.setTitle(Messages.getTranslatedString("CODE"));
@@ -316,14 +334,12 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 		this.repaint();
 	}
 
-	// test
 
 	/**
 	 * Does syntax highlighting of the editor textpane
 	 * @param currentLineOnly Whether we should process the current line only or the entire contents
 	 */
 	private void doSyntax(boolean currentLineOnly) {
-		//TODO: BUG WITH LINE ONLY SYNTAX HIGHLIGHTING
 		int caretPos = editor.getCaretPosition();
 		
 		Document doc = editor.getDocument();
@@ -333,7 +349,6 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 		try {
 			code = doc.getText(0, doc.getLength());
 		} catch (BadLocationException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -372,8 +387,7 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 		}
 		
 		if(!token.equals("")) {
-			System.out.println(token);
-			colourToken(token, code.length());
+			colourToken(token, end);
 			
 		}
 
@@ -421,7 +435,7 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 
 		if(!(e.getKeyCode() == KeyEvent.VK_A && a == Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) &&
 				font.canDisplay(e.getKeyChar())) {
-			doSyntax(false);
+			doSyntax(true);
 		}
 		
 	}

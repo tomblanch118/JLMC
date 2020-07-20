@@ -2,7 +2,13 @@ package ui;
 
 import java.awt.Color;
 
+/**
+ * Aggregation of the commonly used colours in the application.
+ * @author tomblanchard
+ *
+ */
 public class ColorScheme {
+	//TODO: rethink the names of the colours.
 	public static final Color background = new Color(42,41,42);
 	public static final Color button = new Color(58,58,60);
 	public static final Color green = new Color(157,232,30);

@@ -14,8 +14,18 @@ import computer.ParseException;
 
 import language.Messages;
 
-//TODO: Mac packaging etc
+/**
+ * Editor Model class that deals with parsing the contents of the code editor
+ * and assembling it. As a by product it is also responsible for generating 
+ * parse errors, resolving labels and formatting.
+ * 
+ * @author tomblanchard
+ *
+ */
 public class Editor {
+	/**
+	 * Data structures to hold the code / syntax as it is parsed.
+	 */
 	private ArrayList<String> lines = new ArrayList<String>();
 	private HashMap<String, Integer> labels = new HashMap<String, Integer>();
 	private ArrayList<Instruction> instructions = new ArrayList<Instruction>();
@@ -24,10 +34,9 @@ public class Editor {
 	public Editor() {
 	}
 
-	public void setText(String text) {
-		setText(Arrays.asList(text.split("\n")));
-	}
-
+	/**
+	 * Reset the model.
+	 */
 	private void reset() {
 		lines.clear();
 		labels.clear();
@@ -35,6 +44,22 @@ public class Editor {
 		comments.clear();
 	}
 
+	
+	/**
+	 * Add code to the editor model. One of the setText methods must
+	 * be called before parsing can commence.
+	 * @param text
+	 */
+	public void setText(String text) {
+		setText(Arrays.asList(text.split("\n")));
+	}
+
+
+	/**
+	 * Add code text to the editor model. One of the setText methods must
+	 * be called before parsing can commence.
+	 * @param lines
+	 */
 	public void setText(List<String> lines) {
 		reset();
 
@@ -46,6 +71,10 @@ public class Editor {
 		}
 	}
 	
+	/**
+	 * Formats the code
+	 * @return
+	 */
 	public String format() {
 		StringBuilder sb = new StringBuilder();
 		
@@ -114,45 +143,62 @@ public class Editor {
 	}
 
 	//TODO: if not halt found, tell user
+	/**
+	 * Attempts to parse the code currently in the editor model.
+	 * 
+	 * @throws ParseException If the parsing fails at any point. Exceptions will 
+	 * contains information on the offending token.
+	 */
 	public void parse() throws ParseException {
 
-		//System.out.println("Parsing input...");
 		int address = 0;
-		if(lines.size() == 0)
-		{
+		
+		// Quick out
+		if(lines.size() == 0) {
 			return;
 		}
+		
+		// Process each line in turn
 		for (String line : lines) {
 
+			// Remove any comments and whitespace as the are not relevant lexically
 			line = stripComments(line, address);
 			line = line.trim();
 			
+			// Can't have empty lines
 			if(line.length() == 0){
 				throw new ParseException(Messages.getTranslatedString("S_ERR_COMMENT_EOL"), "",address);
 			}
 
+			// parse each line and increment the current instruction address
 			parse(line, address);
 			address++;
 
 		}
 
-		//System.out.println("Resolving labels into numeric addresses...");
-
+		
+		//TODO: Tidy up this and probably merge with resolveInstructions
+		// Resolve the labels into numeric addresses
 		for (String s : labels.keySet()) {
+			
 			if (labels.get(s).equals(-1)) {
+				
 				int lineNumber = -1;
-				for(Instruction i:instructions)
-				{
-					if(i instanceof AddressedInstruction)
-					{
+				
+				for(Instruction i:instructions){
+					
+					// If the instruction takes an address check if it takes this label
+					if(i instanceof AddressedInstruction){
 						AddressedInstruction ai = (AddressedInstruction)i;
 						String label = ai.getTargetLabel();
-						if(s.equals(label))
-						{
+						
+						//Resolve this instructions label / address
+						if(s.equals(label))	{
 							lineNumber = ai.getInstructionAddress();
 						}
 					}
 				}
+				// Potentially an instruction refers to a label that was never defined. If so, report it.
 				throw new ParseException(Messages.getTranslatedString("L_ERR_NOT_DEFINED"),s, lineNumber);
 			}
 		}
@@ -162,12 +208,18 @@ public class Editor {
 
 	}
 
+	/**
+	 * Parse a set of syntax tokens
+	 * @param tokens
+	 * @param lineNumber
+	 * @throws ParseException
+	 */
 	private void parseInstruction(String[] tokens, int lineNumber) throws ParseException {
 		//First token is a label
 		if (!isInstruction(tokens[0])) {
 			throw new ParseException(Messages.getTranslatedString("S_ERR_INSTRUCTION_EXPECTED"), tokens[0],lineNumber);
 		
-			//First token is NOT a label it is a valid instruction
+		//First token is NOT a label it is a valid instruction
 		} else {
 			//Turn it into an uppercase version (neatness)
 			tokens[0] = tokens[0].toUpperCase();
@@ -309,6 +361,11 @@ public class Editor {
 
 	}
 
+	/**
+	 *
+	 * @param token The string to be checked.
+	 * @return true if token is an instruction, false otherwise.
+	 */
 	public static boolean isInstruction(String token) {
 		token = token.toUpperCase();
 		switch (token) {
@@ -329,6 +386,11 @@ public class Editor {
 		return false;
 	}
 	
+	/**
+	 * Check if a token is a number.
+	 *
+	 * @return true of token is a number, false otherwise.
+	 */
 	private boolean isNumber(String token)
 	{
 		try {
@@ -341,6 +403,12 @@ public class Editor {
 		}
 	}
 
+	/**
+	 * 
+	 * @param token String to be checked
+	 * @return true if the instruction represented by this string takes a parameter,
+	 * false otherwise.
+	 */
 	private boolean takesParameter(String token) {
 		token = token.toUpperCase();
 		switch (token) {
@@ -357,6 +425,12 @@ public class Editor {
 		return false;
 	}
 
+	/**
+	 * Strips comments from the String line.
+	 * @param line The string to remove comments from (single line supported only).
+	 * @param lineNumber The line number of code that this string represents.
+	 * @return The stripped string.
+	 */
 	public String stripComments(String line, int lineNumber) {
 		if (line.contains("//")) {
 			int index = line.indexOf("//");
@@ -367,6 +441,10 @@ public class Editor {
 		return line;
 	}
 	
+	/**
+	 * 
+	 * @return all of the instructions that have been parsed.
+	 */
 	public ArrayList<Instruction> getInstructions()
 	{
 		return instructions;

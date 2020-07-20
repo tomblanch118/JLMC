@@ -2,8 +2,26 @@ package computer.instruction;
 
 import language.Messages;
 
+/**
+ * Mnemonic enum that provides the text and numeric representation of the 
+ * mnemonics of this assembly language.
+ * 
+ * @author tomblanchard
+ *
+ */
 public enum Mnemonic {
-	ADD(100), SUB(200), STA(300), LDA(500), BRA(600), BRZ(700), BRP(800), INP(901), OUT(902), OTC(922), HLT(000), DAT(0);
+	ADD(100),
+	SUB(200), 
+	STA(300), 
+	LDA(500), 
+	BRA(600), 
+	BRZ(700), 
+	BRP(800), 
+	INP(901), 
+	OUT(902), 
+	OTC(922), 
+	HLT(000), 
+	DAT(0);
 
 	private int opCode;
 
@@ -63,7 +81,8 @@ public enum Mnemonic {
 	}
 
 	/**
-	 * Returns an explanation of what opCode is actually doing
+	 * Returns an explanation of what opCode is actually doing. 
+	 * These strings will be localised.
 	 * 
 	 * @param opCode
 	 * @return
@@ -85,6 +104,7 @@ public enum Mnemonic {
 
 			switch (instruction) {
 			case 1:
+				//TODO: REally it shouldn't be up to the called to request a token is inserted...
 				s = Messages.insertToken(Messages.getTranslatedString("ADD_MEM_ADDRESS"), ""+address);
 				break;
 			case 2:

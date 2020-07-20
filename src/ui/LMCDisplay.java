@@ -1,13 +1,11 @@
 package ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Locale;
 
 import javax.swing.ImageIcon;

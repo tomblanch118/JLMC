@@ -38,7 +38,6 @@ public class ControlPanel extends JPanel implements ActionListener, InputChannel
 	public ControlPanel(Computer computer) {
 		
 		Messages.registerLocalisationListener(this);
-		//TODO: Look into doing spring layout properly
 		this.computer = computer;
 		this.setBorder(new EmptyBorder(UI_PADDING,UI_PADDING,UI_PADDING,UI_PADDING));
 		this.setLayout(new GridLayout(1, 6, UI_PADDING, 0));
@@ -167,8 +166,6 @@ public class ControlPanel extends JPanel implements ActionListener, InputChannel
 
 			i = Integer.parseInt(s);
 			if (i < 0) {
-				// TODO: warn user
-
 				JOptionPane.showMessageDialog(this.getParent(), Messages.getTranslatedString("INPUT_MUST_NUMBER"));
 				setReadyToRun();
 				computer.restart();
