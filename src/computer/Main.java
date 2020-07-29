@@ -31,7 +31,13 @@ public class Main {
 	//Home/bin/jpackage --name JLMC --arguments -Xdock:name="JLMC" --arguments -Xdock:icon="jlmc.png" --arguments -splash:"splash.png" --icon ~/Documents/eclipse_workspace/LMC\ Project/res/jlmc.icns   --input ~/Documents/eclipse_workspace/LMC\ Project/ --main-jar JLMC.jar
 
 	/* ???
-	 * jpackage --name JLMC --arguments -Xdock:name="JLMC" --arguments -Xdock:icon="jlmc.png" --arguments -splash:"splash.png" --icon ~/Documents/eclipse_workspace/LMC\ Project/res/jlmc.icns   --input ~/Documents/eclipse_workspace/LMC\ Project/ --main-jar JLMC.jar
+	 * jpackage --name JLMC --arguments -Xdock:name="JLMC" --arguments -Xdock:icon="jlmc.png" 
+	 *  --icon ~/Documents/eclipse_workspace/LMC\ Project/res/jlmc.icns  
+	 *  --input ~/Documents/eclipse_workspace/LMC\ Project/ --main-jar JLMC.jar
+	 *
+	 *
+	 *windows add the following and use .ico file
+	 * --win-menu --win-menu-group Education --icon jlmc.ico
 	 */
 	/** 
 	 * Standard entry point
