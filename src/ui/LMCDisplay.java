@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -11,12 +12,14 @@ import java.util.Locale;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -39,6 +42,7 @@ public class LMCDisplay extends JFrame implements ActionListener, LocalisationLi
 
 	// Menu system
 	private JMenuBar menuBar = new JMenuBar();
+	
 	private JMenu fileMenu = new JMenu(Messages.getTranslatedString("FILE"));
 	private JMenuItem openItem = new JMenuItem(Messages.getTranslatedString("OPEN"));
 	private JMenuItem saveItem = new JMenuItem(Messages.getTranslatedString("SAVE"));
@@ -47,6 +51,9 @@ public class LMCDisplay extends JFrame implements ActionListener, LocalisationLi
 	private JMenu languageMenu = new JMenu(Messages.getTranslatedString("LANGUAGE"));
 	private JMenuItem englishItem = new JMenuItem("English");
 	private JMenuItem welshItem = new JMenuItem("Cymraeg");
+	
+	private JMenu helpMenu = new JMenu(Messages.getTranslatedString("INFORMATION"));
+	private JMenuItem aboutItem = new JMenuItem("About");
 	
 	// Reference to the editor panel so save/load methods can be called
 	private EditorPanel ep;
@@ -64,6 +71,7 @@ public class LMCDisplay extends JFrame implements ActionListener, LocalisationLi
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setMinimumSize(new Dimension(900, 600));
 		this.setSize(new Dimension(900, 600));
+		this.setBackground(ColorScheme.background);
 	
 		
 		Messages.registerLocalisationListener(this);
@@ -71,6 +79,7 @@ public class LMCDisplay extends JFrame implements ActionListener, LocalisationLi
 		openItem.addActionListener(this);
 		saveItem.addActionListener(this);
 		exitItem.addActionListener(this);
+		aboutItem.addActionListener(this);
 		
 		englishItem.addActionListener(this);
 		welshItem.addActionListener(this);
@@ -85,6 +94,8 @@ public class LMCDisplay extends JFrame implements ActionListener, LocalisationLi
 		languageMenu.add(englishItem);
 		languageMenu.add(welshItem);
 		
+		menuBar.add(helpMenu);
+		helpMenu.add(aboutItem);
 	
 		URL imageURL = this.getClass().getResource("/uk.png");
 		ImageIcon image = new ImageIcon(imageURL);
@@ -163,6 +174,30 @@ public class LMCDisplay extends JFrame implements ActionListener, LocalisationLi
 			Messages.setCurrentLocale(new Locale("cy"));
 			englishItem.setSelected(false);
 			welshItem.setSelected(true);
+		} else if(e.getSource().equals(aboutItem)) {
+			JFrame frame = new JFrame("About JLMC...");
+			Dimension size = new Dimension(200,200);
+			frame.setSize(size);
+			frame.setMinimumSize(size);
+			frame.setResizable(false);
+			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			frame.setVisible(true);
+			frame.setBackground(ColorScheme.background);
+			
+			JPanel panel = new JPanel();
+			frame.getContentPane().add(panel);
+			panel.setLayout(new BorderLayout());
+			
+			JTextArea text = new JTextArea("Written by Tom Blanchard with Welsh translations by Luke Clement. \n\n"
+					+ "Supported by the Technocamps Project.");
+			
+			text.setForeground(Color.WHITE);
+			text.setOpaque(false);
+			text.setEditable(false);
+			text.setLineWrap(true);
+			text.setWrapStyleWord(true);
+			panel.setBackground(ColorScheme.background);
+			panel.add(text, BorderLayout.CENTER);
 		}
 	}
 
@@ -173,6 +208,7 @@ public class LMCDisplay extends JFrame implements ActionListener, LocalisationLi
 		saveItem.setText(Messages.getTranslatedString("SAVE"));
 		exitItem.setText(Messages.getTranslatedString("EXIT"));
 		languageMenu.setText(Messages.getTranslatedString("LANGUAGE"));
+		helpMenu.setText(Messages.getTranslatedString("INFORMATION"));
 		
 	}
 	

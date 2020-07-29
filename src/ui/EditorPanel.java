@@ -18,7 +18,6 @@ import java.util.Scanner;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -363,7 +362,6 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 				//TODO: probably log this
 			}
 		}
-		
 		String token = "";
 		boolean inComment = false;
 		for (int i = start; i < end; i++) {
@@ -431,9 +429,9 @@ public class EditorPanel extends JPanel implements ActionListener, LocalisationL
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		int a = e.getModifiersEx() & Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+		int a = e.getModifiersEx() & Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
-		if(!(e.getKeyCode() == KeyEvent.VK_A && a == Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx()) &&
+		if(!(e.getKeyCode() == KeyEvent.VK_A && a == Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()) &&
 				font.canDisplay(e.getKeyChar())) {
 			doSyntax(true);
 		}
