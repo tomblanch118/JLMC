@@ -12,5 +12,5 @@ import language.Messages;
  *
  */
 public interface LocalisationListener {
-	public void relocalise();
+  public void relocalise();
 }
